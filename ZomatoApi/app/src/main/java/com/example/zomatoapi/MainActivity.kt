@@ -15,24 +15,43 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(),LocationListener {
+
+//    var adapter = CustomAdapter()
 
     private lateinit var locationManager: LocationManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if(!checkPermission()) {
-            askPermission()
-        }else
-        {
-            tvStart.text = "fetching location..."
-//            tvStart.visibility=View.GONE
-//            rv_restaurants.visibility=View.VISIBLE
-            getLocation()
+            tvStart.visibility=View.VISIBLE
+            rv_restaurants.visibility=View.GONE
 
-        }
+//        if(!checkPermission()) {
+//            askPermission()
+//        }
+//        if(checkPermission())
+//        {
+//            tvStart.text = "fetching location..."
+////            tvStart.visibility=View.GONE
+////            rv_restaurants.visibility=View.VISIBLE
+//            getLocation()
+//            rv_restaurants.apply {
+//                layoutManager = LinearLayoutManager(this@MainActivity)
+//                adapter = this@MainActivity.adapter
+//            }
+//        }
+
+//        rv_restaurants.apply {
+//            layoutManager = LinearLayoutManager(this@MainActivity)
+//            adapter = this@MainActivity.adapter
+//        }
+        fetchRestaurantList(29.469233,77.716528)
 
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -71,11 +90,28 @@ class MainActivity : AppCompatActivity(),LocationListener {
     private fun getLocation()
     {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,50000000,5000f,this)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,500,5f,this)
+        Log.d("flags","checking location.....")
     }
 
     override fun onLocationChanged(location: Location) {
         tvStart.text = "lat: ${location.latitude} \n long: ${location.longitude}"
+        Log.d("flags","lat: ${location.latitude}")
+//        fetchRestaurantList(location.latitude,location.longitude)
+    }
+
+    private fun fetchRestaurantList(lat:Double,long: Double)
+    {
+        GlobalScope.launch(Dispatchers.Main) {
+            val response = withContext(Dispatchers.IO){Client.api.getData()}
+            if(response.isSuccessful){
+                response.body()?.let {
+//                    adapter.setLocation(it)
+                    Log.d("flags","no of restaurants: ${it.nearby_restaurants.size} ")
+//                    tvStart.text = it.toString()
+                }
+            }
+        }
     }
 
 }
