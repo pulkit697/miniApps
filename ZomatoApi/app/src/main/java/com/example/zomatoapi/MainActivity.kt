@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
 //            tvStart.visibility=View.GONE
 //            rv_restaurants.visibility=View.VISIBLE
             getLocation()
+
         }
 
     }
