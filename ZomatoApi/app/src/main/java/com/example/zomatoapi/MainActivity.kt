@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,12 +22,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+//import retrofit2.converter.scalars.ScalarsConverterFactory
 
 const val BASE_URL = "https://developers.zomato.com/api/v2.1/"
 
 class MainActivity : AppCompatActivity(),LocationListener {
 
-//    var adapter = CustomAdapter()
+    var adapter = CustomAdapter()
 
     private lateinit var locationManager: LocationManager
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +38,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
             tvStart.visibility=View.VISIBLE
             rv_restaurants.visibility=View.GONE
 
-        search()
+//        search()
 
 //        if(!checkPermission()) {
 //            askPermission()
@@ -52,12 +54,12 @@ class MainActivity : AppCompatActivity(),LocationListener {
 //                adapter = this@MainActivity.adapter
 //            }
 //        }
-
+//
 //        rv_restaurants.apply {
 //            layoutManager = LinearLayoutManager(this@MainActivity)
 //            adapter = this@MainActivity.adapter
 //        }
-//        fetchRestaurantList(29.469233,77.716528)
+        fetchRestaurantList(29.469233,77.716528)
 
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -108,10 +110,16 @@ class MainActivity : AppCompatActivity(),LocationListener {
 
     private fun fetchRestaurantList(lat:Double,long: Double)
     {
+        val apu = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ZomatoApi::class.java)
         GlobalScope.launch(Dispatchers.Main) {
-            val response = withContext(Dispatchers.IO){Client.api.getData().execute()}
+            val response = withContext(Dispatchers.IO){apu.getRestaurantsByLocation(lat,long).execute()}
             if(response.isSuccessful){
-                tvStart.text = response.body()!!.results_found.toString()
+                
+                tvStart.text = response.body()!!.nearby_restaurants.size.toString()
             }else{
                 tvStart.text = "failure"
             }
@@ -127,7 +135,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
                 .create(ZomatoApi::class.java)
 
         GlobalScope.launch(Dispatchers.Main) {
-            val response= withContext(Dispatchers.IO) { apu.getData().execute() }
+            val response= withContext(Dispatchers.IO) { apu.getRestaurantsBySearch().execute() }
             if(response.isSuccessful)
             {
                 tvStart.text = response.body()!!.results_found.toString()
