@@ -1,5 +1,5 @@
 package com.example.zomatoapi.data
 
 data class NearbyRestaurant(
-    val restaurant: RestaurantXX
+    val restaurant: RestaurantX
 )

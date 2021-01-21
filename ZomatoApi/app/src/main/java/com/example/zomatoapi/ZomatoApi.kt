@@ -17,5 +17,5 @@ interface ZomatoApi {
 
     @Headers("user-key: 1b3c8b37ea96785391fa55c288ac385c")
     @GET("search")
-    fun getRestaurantsBySearch(): Call<SearchResult>
+    fun getRestaurantsBySearch(@Query("q")query:String): Call<SearchResult>
 }

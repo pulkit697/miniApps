@@ -12,10 +12,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.zomatoapi.data.GeoCode
+import com.example.zomatoapi.data.SearchResult
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -31,6 +34,7 @@ const val BASE_URL = "https://developers.zomato.com/api/v2.1/"
 class MainActivity : AppCompatActivity(),LocationListener {
 
     var adapter = CustomAdapter(listOf())
+    var adapter2 = CustomAdapterSearch(listOf())
 
     private lateinit var locationManager: LocationManager
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +43,16 @@ class MainActivity : AppCompatActivity(),LocationListener {
 
             tvStart.visibility=View.VISIBLE
             rv_restaurants.visibility=View.GONE
+            rv_search.visibility = View.GONE
 
-//        search()
+
+        bt_search.setOnClickListener {
+            if(etSearch.text.isNotEmpty())
+            {
+                search(etSearch.text.toString())
+            }
+        }
+
 
         if(!checkPermission()) {
             askPermission()
@@ -51,22 +63,20 @@ class MainActivity : AppCompatActivity(),LocationListener {
 //            tvStart.visibility=View.GONE
 //            rv_restaurants.visibility=View.VISIBLE
             getLocation()
-            rv_restaurants.apply {
-                layoutManager = LinearLayoutManager(this@MainActivity)
-                adapter = this@MainActivity.adapter
-            }
         }
 
         rv_restaurants.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = this@MainActivity.adapter
         }
+        rv_search.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter2
+        }
 //        fetchRestaurantList(29.469233,77.716528)
 
-    }
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search_menu,menu)
-        return true
+
+
     }
     private fun checkPermission():Boolean {
         return ActivityCompat.checkSelfPermission(this,ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -107,6 +117,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
     }
 
     private fun fetchRestaurantList(lat:Double,long: Double) {
+        adapter.list= listOf()
         val apu = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -127,11 +138,20 @@ class MainActivity : AppCompatActivity(),LocationListener {
     private fun fillList(response: Response<GeoCode>?) {
         tvStart.visibility=View.GONE
         rv_restaurants.visibility = View.VISIBLE
+        rv_search.visibility = View.GONE
         adapter.list = response!!.body()!!.nearby_restaurants
     }
 
-    private fun search()
+    private fun fillList_search(response: Response<SearchResult>?) {
+        tvStart.visibility=View.GONE
+        rv_restaurants.visibility = View.GONE
+        rv_search.visibility = View.VISIBLE
+        adapter2.list = response!!.body()!!.restaurants
+    }
+
+    private fun search(query:String)
     {
+        adapter2.list = listOf()
         val apu = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -139,9 +159,11 @@ class MainActivity : AppCompatActivity(),LocationListener {
                 .create(ZomatoApi::class.java)
 
         GlobalScope.launch(Dispatchers.Main) {
-            val response= withContext(Dispatchers.IO) { apu.getRestaurantsBySearch().execute() }
+            val response= withContext(Dispatchers.IO) { apu.getRestaurantsBySearch(query).execute() }
             if(response.isSuccessful) {
-                tvStart.text = response.body()!!.results_found.toString()
+                val size = response.body()!!.restaurants.size
+                tvStart.text = size.toString()
+                fillList_search(response)
             } else {
                 tvStart.text = "request failed"
             }

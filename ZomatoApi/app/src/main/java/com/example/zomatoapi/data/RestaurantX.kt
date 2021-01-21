@@ -1,7 +1,7 @@
 package com.example.zomatoapi.data
 
 data class RestaurantX(
-    val R: R,
+    val R: RX,
     val all_reviews: AllReviews,
     val all_reviews_count: Int,
     val apikey: String,
