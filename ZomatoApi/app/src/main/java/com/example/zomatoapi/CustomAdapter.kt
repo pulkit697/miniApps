@@ -5,21 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zomatoapi.data.GeoCode
+import com.example.zomatoapi.data.NearbyRestaurant
 import kotlinx.android.synthetic.main.list_item_layout.view.*
 
-class CustomAdapter:RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
-
-    private var locationDetail: GeoCode?
-
-    init {
-        locationDetail = null
-    }
-
-    fun setLocation(locationDet :GeoCode)
-    {
-        locationDetail = locationDet
-    }
-
+class CustomAdapter(var list : List<NearbyRestaurant>):RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
 
@@ -29,12 +18,8 @@ class CustomAdapter:RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemView.tvListItem.text = locationDetail?.nearby_restaurants?.get(position)?.restaurant?.name
+        holder.itemView.tvListItem.text = list[position].restaurant.name
     }
 
-    override fun getItemCount(): Int {
-        if(locationDetail==null)
-            return 0
-        return locationDetail?.nearby_restaurants!!.size
-    }
+    override fun getItemCount(): Int = list.size
 }

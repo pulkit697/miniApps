@@ -15,11 +15,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.zomatoapi.data.GeoCode
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 //import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -28,7 +30,7 @@ const val BASE_URL = "https://developers.zomato.com/api/v2.1/"
 
 class MainActivity : AppCompatActivity(),LocationListener {
 
-    var adapter = CustomAdapter()
+    var adapter = CustomAdapter(listOf())
 
     private lateinit var locationManager: LocationManager
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,40 +42,36 @@ class MainActivity : AppCompatActivity(),LocationListener {
 
 //        search()
 
-//        if(!checkPermission()) {
-//            askPermission()
-//        }
-//        if(checkPermission())
-//        {
-//            tvStart.text = "fetching location..."
-////            tvStart.visibility=View.GONE
-////            rv_restaurants.visibility=View.VISIBLE
-//            getLocation()
-//            rv_restaurants.apply {
-//                layoutManager = LinearLayoutManager(this@MainActivity)
-//                adapter = this@MainActivity.adapter
-//            }
-//        }
-//
-//        rv_restaurants.apply {
-//            layoutManager = LinearLayoutManager(this@MainActivity)
-//            adapter = this@MainActivity.adapter
-//        }
-        fetchRestaurantList(29.469233,77.716528)
+        if(!checkPermission()) {
+            askPermission()
+        }
+        if(checkPermission())
+        {
+            tvStart.text = "fetching location..."
+//            tvStart.visibility=View.GONE
+//            rv_restaurants.visibility=View.VISIBLE
+            getLocation()
+            rv_restaurants.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = this@MainActivity.adapter
+            }
+        }
+
+        rv_restaurants.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter
+        }
+//        fetchRestaurantList(29.469233,77.716528)
 
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.search_menu,menu)
         return true
     }
-
-    private fun checkPermission():Boolean
-    {
+    private fun checkPermission():Boolean {
         return ActivityCompat.checkSelfPermission(this,ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
-
-    private fun askPermission()
-    {
+    private fun askPermission() {
         val permissionsList = arrayOf(ACCESS_FINE_LOCATION)
         ActivityCompat.requestPermissions(this,permissionsList,1)
     }
@@ -98,14 +96,15 @@ class MainActivity : AppCompatActivity(),LocationListener {
     private fun getLocation()
     {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,500,5f,this)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,500000,5000f,this)
         Log.d("flags","checking location.....")
     }
 
     override fun onLocationChanged(location: Location) {
         tvStart.text = "lat: ${location.latitude} \n long: ${location.longitude}"
         Log.d("flags","lat: ${location.latitude}")
-//        fetchRestaurantList(location.latitude,location.longitude)
+        tvStart.text = "location fetched,\n fetching restaurants..."
+        fetchRestaurantList(location.latitude,location.longitude)
     }
 
     private fun fetchRestaurantList(lat:Double,long: Double)
@@ -118,12 +117,19 @@ class MainActivity : AppCompatActivity(),LocationListener {
         GlobalScope.launch(Dispatchers.Main) {
             val response = withContext(Dispatchers.IO){apu.getRestaurantsByLocation(lat,long).execute()}
             if(response.isSuccessful){
-                
-                tvStart.text = response.body()!!.nearby_restaurants.size.toString()
+                val size = response.body()!!.nearby_restaurants.size
+                tvStart.text = size.toString()
+                fillList(response)
             }else{
                 tvStart.text = "failure"
             }
         }
+    }
+
+    private fun fillList(response: Response<GeoCode>?) {
+        tvStart.visibility=View.GONE
+        rv_restaurants.visibility = View.VISIBLE
+        adapter.list = response!!.body()!!.nearby_restaurants
     }
 
     private fun search()
