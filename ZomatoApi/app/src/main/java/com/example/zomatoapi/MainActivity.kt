@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
     private fun fetchRestaurantList(lat:Double,long: Double)
     {
         GlobalScope.launch(Dispatchers.Main) {
-            val response = withContext(Dispatchers.IO){Client.api.getData()}
+            val response = withContext(Dispatchers.IO){Client.api.getData().execute()}
             if(response.isSuccessful){
                 response.body()?.let {
 //                    adapter.setLocation(it)
