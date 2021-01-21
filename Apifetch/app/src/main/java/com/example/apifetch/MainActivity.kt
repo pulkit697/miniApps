@@ -11,9 +11,11 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+  const val api_key = "5966094c1fe70180dcb1423deb995d31"
   const val BASE_URL = "https://cat-fact.herokuapp.com"
   const val BASE_URL_GITHUB = "https://api.github.com"
-  const val BASE_URL_WEATHER = "https://api.weatherapi.com"
+
+  const val BASE_URL_WEATHER = "https://api.openweathermap.org/data/2.5/"
 
   class MainActivity : AppCompatActivity() {
 
