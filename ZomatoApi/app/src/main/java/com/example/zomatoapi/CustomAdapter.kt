@@ -1,5 +1,6 @@
 package com.example.zomatoapi
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,5 +22,8 @@ class CustomAdapter(var list : List<NearbyRestaurant>):RecyclerView.Adapter<Cust
         holder.itemView.tvListItem.text = list[position].restaurant.name
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int {
+        Log.d("flags","SIze of RecyclerView: ${list.size}")
+        return list.size
+    }
 }

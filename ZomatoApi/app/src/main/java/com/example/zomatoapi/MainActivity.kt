@@ -93,8 +93,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocation()
-    {
+    private fun getLocation(){
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,500000,5000f,this)
         Log.d("flags","checking location.....")
@@ -107,14 +106,13 @@ class MainActivity : AppCompatActivity(),LocationListener {
         fetchRestaurantList(location.latitude,location.longitude)
     }
 
-    private fun fetchRestaurantList(lat:Double,long: Double)
-    {
+    private fun fetchRestaurantList(lat:Double,long: Double) {
         val apu = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ZomatoApi::class.java)
-        GlobalScope.launch(Dispatchers.Main) {
+        GlobalScope.launch(Dispatchers.Main){
             val response = withContext(Dispatchers.IO){apu.getRestaurantsByLocation(lat,long).execute()}
             if(response.isSuccessful){
                 val size = response.body()!!.nearby_restaurants.size
@@ -142,12 +140,9 @@ class MainActivity : AppCompatActivity(),LocationListener {
 
         GlobalScope.launch(Dispatchers.Main) {
             val response= withContext(Dispatchers.IO) { apu.getRestaurantsBySearch().execute() }
-            if(response.isSuccessful)
-            {
+            if(response.isSuccessful) {
                 tvStart.text = response.body()!!.results_found.toString()
-            }
-            else
-            {
+            } else {
                 tvStart.text = "request failed"
             }
         }
