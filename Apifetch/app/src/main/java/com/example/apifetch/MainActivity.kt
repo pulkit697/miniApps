@@ -2,21 +2,18 @@
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.apifetch.data.CatFact
 //import com.example.apifetch.Client
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
   const val BASE_URL = "https://cat-fact.herokuapp.com"
   const val BASE_URL_GITHUB = "https://api.github.com"
+  const val BASE_URL_WEATHER = "https://api.weatherapi.com"
 
   class MainActivity : AppCompatActivity() {
 
@@ -29,7 +26,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 //        getCurrentData()
 
-        getGithubData()
+//        getGithubData()
+
+        getWeatherData()
 
 //        GlobalScope.launch(Dispatchers.Main) {
 //            val response = withContext(Dispatchers.IO){Client.api.getData()}
@@ -88,4 +87,24 @@ import retrofit2.converter.gson.GsonConverterFactory
           }
       }
 
+      private fun getWeatherData()
+      {
+          val apu = Retrofit.Builder()
+              .baseUrl(BASE_URL_WEATHER)
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(WeatherApi::class.java)
+
+          GlobalScope.launch(Dispatchers.Main) {
+              val response= withContext(Dispatchers.IO) { apu.getData().execute() }
+              if(response.isSuccessful)
+              {
+                  tvStart.text = response.body()!!.weather[0].description
+              }
+              else
+              {
+                  tvStart.text = "request failed"
+              }
+          }
+      }
   }

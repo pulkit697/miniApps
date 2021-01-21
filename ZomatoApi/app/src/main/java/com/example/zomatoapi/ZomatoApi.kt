@@ -1,6 +1,7 @@
 package com.example.zomatoapi
 
 
+import com.example.zomatoapi.data.SearchResult
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -8,9 +9,9 @@ import retrofit2.http.*
 
 interface ZomatoApi {
 
-    @Headers("accept:application-json","user-key: 1b3c8b37ea96785391fa55c288ac385c")
     @GET("search")
-    suspend fun getData(): Call<LocationDetail>
+    @Headers("user-key: 1b3c8b37ea96785391fa55c288ac385c")
+    suspend fun getData(): Call<SearchResult>
 //
 //    @Headers("user-key: 1b3c8b37ea96785391fa55c288ac385c")
 //    @GET("geocode")

@@ -13,7 +13,7 @@ object Client {
         .create()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://developers.zomato.com/api/v2.1/")
+        .baseUrl("https://developers.zomato.com/api/v2.1")
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 

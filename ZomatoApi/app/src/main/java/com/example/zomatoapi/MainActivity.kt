@@ -19,6 +19,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+const val BASE_URL = "https://developers.zomato.com/api/v2.1/"
 
 class MainActivity : AppCompatActivity(),LocationListener {
 
@@ -31,6 +35,8 @@ class MainActivity : AppCompatActivity(),LocationListener {
 
             tvStart.visibility=View.VISIBLE
             rv_restaurants.visibility=View.GONE
+
+        search()
 
 //        if(!checkPermission()) {
 //            askPermission()
@@ -51,7 +57,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
 //            layoutManager = LinearLayoutManager(this@MainActivity)
 //            adapter = this@MainActivity.adapter
 //        }
-        fetchRestaurantList(29.469233,77.716528)
+//        fetchRestaurantList(29.469233,77.716528)
 
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -105,13 +111,33 @@ class MainActivity : AppCompatActivity(),LocationListener {
         GlobalScope.launch(Dispatchers.Main) {
             val response = withContext(Dispatchers.IO){Client.api.getData().execute()}
             if(response.isSuccessful){
-                response.body()?.let {
-//                    adapter.setLocation(it)
-                    Log.d("flags","no of restaurants: ${it.nearby_restaurants.size} ")
-//                    tvStart.text = it.toString()
-                }
+                tvStart.text = response.body()!!.results_found.toString()
+            }else{
+                tvStart.text = "failure"
             }
         }
+    }
+
+    private fun search()
+    {
+        val apu = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ZomatoApi::class.java)
+
+        GlobalScope.launch(Dispatchers.Main) {
+            val response= withContext(Dispatchers.IO) { apu.getData().execute() }
+            if(response.isSuccessful)
+            {
+                tvStart.text = response.body()!!.results_found.toString()
+            }
+            else
+            {
+                tvStart.text = "request failed"
+            }
+        }
+
     }
 
 }
