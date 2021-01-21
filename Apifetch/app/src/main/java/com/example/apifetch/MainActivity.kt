@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
   const val BASE_URL = "https://cat-fact.herokuapp.com"
+  const val BASE_URL_GITHUB = "https://api.github.com"
 
   class MainActivity : AppCompatActivity() {
 
@@ -26,7 +27,9 @@ import retrofit2.converter.gson.GsonConverterFactory
         setContentView(R.layout.activity_main)
 
 
-        getCurrentData()
+//        getCurrentData()
+
+        getGithubData()
 
 //        GlobalScope.launch(Dispatchers.Main) {
 //            val response = withContext(Dispatchers.IO){Client.api.getData()}
@@ -56,12 +59,33 @@ import retrofit2.converter.gson.GsonConverterFactory
               val response= withContext(Dispatchers.IO) {
                   apu.getCatFact().execute()
               }
-              if (response.isSuccessful)
-              {
+              if (response.isSuccessful) {
                   tvStart.text = response.body()!!.text
               }else {
                   tvStart.text = "cancelled"
               }
           }
       }
+
+      private fun getGithubData()
+      {
+          val apu = Retrofit.Builder()
+              .baseUrl(BASE_URL_GITHUB)
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(GithubApi::class.java)
+
+          GlobalScope.launch(Dispatchers.Main) {
+              val response= withContext(Dispatchers.IO) { apu.getUsers().execute() }
+              if(response.isSuccessful)
+              {
+                  tvStart.text = response.body()!![0].login
+              }
+              else
+              {
+                    tvStart.text = "request failed"
+              }
+          }
+      }
+
   }
