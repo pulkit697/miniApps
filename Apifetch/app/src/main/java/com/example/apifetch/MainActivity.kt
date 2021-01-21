@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-  const val api_key = "5966094c1fe70180dcb1423deb995d31"
   const val BASE_URL = "https://cat-fact.herokuapp.com"
   const val BASE_URL_GITHUB = "https://api.github.com"
 
@@ -30,7 +29,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 //        getGithubData()
 
-        getWeatherData()
+//        getWeatherData()
+
+        getWeatherDataBySearch("india")
 
 //        GlobalScope.launch(Dispatchers.Main) {
 //            val response = withContext(Dispatchers.IO){Client.api.getData()}
@@ -99,6 +100,27 @@ import retrofit2.converter.gson.GsonConverterFactory
 
           GlobalScope.launch(Dispatchers.Main) {
               val response= withContext(Dispatchers.IO) { apu.getData().execute() }
+              if(response.isSuccessful)
+              {
+                  tvStart.text = response.body()!!.weather[0].description
+              }
+              else
+              {
+                  tvStart.text = "request failed"
+              }
+          }
+      }
+
+      private fun getWeatherDataBySearch(str:String)
+      {
+          val apu = Retrofit.Builder()
+              .baseUrl(BASE_URL_WEATHER)
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(WeatherApi::class.java)
+
+          GlobalScope.launch(Dispatchers.Main) {
+              val response= withContext(Dispatchers.IO) { apu.getDataBySearch(str).execute() }
               if(response.isSuccessful)
               {
                   tvStart.text = response.body()!!.weather[0].description
