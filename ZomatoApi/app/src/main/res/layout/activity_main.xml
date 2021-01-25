@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:visibility="visible"
-        android:text="fetching data please wait..." />
+        android:text="Please allow location permission" />
 
     <EditText
         android:id="@+id/etSearch"

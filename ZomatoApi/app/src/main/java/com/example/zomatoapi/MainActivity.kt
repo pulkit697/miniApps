@@ -56,15 +56,15 @@ class MainActivity : AppCompatActivity(),LocationListener {
 
         if(!checkPermission()) {
             askPermission()
+            if(checkPermission())
+                tvStart.text = "Please restart app."
         }
         if(checkPermission())
         {
-            tvStart.text = "fetching location..."
 //            tvStart.visibility=View.GONE
 //            rv_restaurants.visibility=View.VISIBLE
             getLocation()
         }
-
         rv_restaurants.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = this@MainActivity.adapter
@@ -74,10 +74,10 @@ class MainActivity : AppCompatActivity(),LocationListener {
             adapter = this@MainActivity.adapter2
         }
 //        fetchRestaurantList(29.469233,77.716528)
-
-
-
     }
+
+
+
     private fun checkPermission():Boolean {
         return ActivityCompat.checkSelfPermission(this,ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
@@ -96,6 +96,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
             if(checkPermission())
             {
                 Toast.makeText(this,"permission allowed",Toast.LENGTH_SHORT).show()
+                getLocation()
             }else{
                 Toast.makeText(this,"permission denied",Toast.LENGTH_SHORT).show()
             }
@@ -104,6 +105,7 @@ class MainActivity : AppCompatActivity(),LocationListener {
 
     @SuppressLint("MissingPermission")
     private fun getLocation(){
+        tvStart.text = "fetching location..."
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,500000,5000f,this)
         Log.d("flags","checking location.....")
