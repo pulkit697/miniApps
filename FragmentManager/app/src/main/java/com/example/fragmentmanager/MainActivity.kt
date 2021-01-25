@@ -9,6 +9,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val bundle = Bundle()
+        bundle.putString("KEY","Pulkit")
+        val fragment = SecondFragment()
+        fragment.arguments = bundle
+
         supportFragmentManager
             .beginTransaction()
             .add(R.id.frag_container,FirstFragment())
@@ -17,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         btSwitch.setOnClickListener {
             supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.frag_container,SecondFragment())
+                .replace(R.id.frag_container,fragment)
                 .commitNow()
         }
 
