@@ -8,10 +8,7 @@ class CustomAdapter(fa:FragmentActivity):FragmentStateAdapter(fa) {
 
     private val list = arrayListOf<Fragment>()
 
-    fun add(fragment: Fragment)
-    {
-        list.add(fragment)
-    }
+    fun add(fragment: Fragment) { list.add(fragment) }
 
     override fun getItemCount(): Int = list.size
 
