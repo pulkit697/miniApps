@@ -1,8 +1,13 @@
 package com.example.sqlite
 
+import android.app.Activity
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.sqlite.db.DatabaseHelper
@@ -18,7 +23,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val db= DatabaseHelper(this).writableDatabase
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+
+        val db = DatabaseHelper(this).writableDatabase
 
         val todoAdapter = ArrayAdapter(
                 this,
@@ -38,6 +45,8 @@ class MainActivity : AppCompatActivity() {
         lvTodo.adapter = todoAdapter
         refreshTodoList()
 
+
+
         btTodo.setOnClickListener {
             val s = etTodo.text.toString()
             if(s.isNotEmpty()){
@@ -45,12 +54,17 @@ class MainActivity : AppCompatActivity() {
                 TodoTable.insertToDo(db, todo)
                 refreshTodoList()
                 etTodo.text.clear()
+                hideKeyboard(this,currentFocus?:btTodo)
 //                todos.add(s)
 //                todoAdapter.notifyDataSetChanged()
             }else{
                 Toast.makeText(this,"Please enter some task to do!",Toast.LENGTH_SHORT).show()
             }
         }
-
+    }
+    fun hideKeyboard(activity: Activity, view: View)
+    {
+//        Log.d("pulkit",view.toString())
+        (activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(view.windowToken,0)
     }
 }
