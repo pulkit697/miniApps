@@ -62,9 +62,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    fun hideKeyboard(activity: Activity, view: View)
+    private fun hideKeyboard(activity: Activity, view: View)
     {
 //        Log.d("pulkit",view.toString())
-        (activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(view.windowToken,0)
+        (activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager)
+                .hideSoftInputFromWindow(view.windowToken,0)
     }
 }
