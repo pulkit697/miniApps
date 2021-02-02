@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="5dp"
+    android:padding="5dp"
+    android:elevation="3dp"
+    >
+<androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/llText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/flFlag"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/tvCountry"
+                android:textSize="30sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingStart="10dp"
+                android:text="India"/>
+            <TextView
+                android:id="@+id/tvCapital"
+                android:textSize="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="30dp"
+                android:text="Delhi"/>
+            <TextView
+                android:id="@+id/tvRegion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="30dp"
+                android:text="Asia"/>
+            <TextView
+                android:id="@+id/tvSubRegion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="40dp"
+                android:text="Southern Asia"/>
+            <TextView
+                android:id="@+id/tvPopulation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="30dp"
+                android:text="Poulation: 4567890"/>
+        </LinearLayout>
+        <FrameLayout
+            android:id="@+id/flFlag"
+            android:layout_width="180dp"
+            android:layout_height="0dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/llText"
+            android:padding="1dp"
+            android:layout_margin="14dp"
+            android:background="@color/black"
+            >
+            <ImageView
+                android:id="@+id/ivFlag"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                />
+        </FrameLayout>
+    <TextView
+        android:id="@+id/tvLanguages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/llText"
+        android:text="Languages: hindi, English"
+        android:paddingStart="30dp"
+        />
+    <TextView
+        android:id="@+id/tvBorders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tvLanguages"
+        android:text="Borders: PAK, CHN, BNG, NPL"
+        android:paddingStart="30dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
