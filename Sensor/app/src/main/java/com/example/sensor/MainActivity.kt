@@ -20,8 +20,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var sensorEventListener: SensorEventListener
     val colors = arrayOf(Color.RED,Color.BLUE,Color.CYAN,Color.GREEN,Color.MAGENTA,Color.YELLOW)
 
-    //9fae02aa72efded5152edccff26374d7da6ec012
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
