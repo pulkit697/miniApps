@@ -10,21 +10,18 @@ import androidx.room.Query
 interface ToDoDao {
 
     @Insert
-    suspend fun insert(toDo: ToDo)
+    suspend fun insert(toDo: ToDo):Long
 
     @Query("delete from ToDo where id =:id")
     suspend fun delete(id:Long)
 
-    @Query("Update ToDo  set isDone = 1 where id = :id")
+    @Query("Update ToDo set isDone = 1 where id = :id")
     suspend fun finishTask(id:Long)
 
     @Query("Select * from ToDo")
     fun getAll():LiveData<List<ToDo>>
 
-    @Query("Select * from ToDo")
-    fun getUnDoneTasks():LiveData<List<ToDo>>
-
-    @Query("Select * from ToDo")
-    fun getDoneTasks():LiveData<List<ToDo>>
+    @Query("Select * from ToDo where isDone==-1")
+    fun getIncompleteTasks():LiveData<List<ToDo>>
 
 }
