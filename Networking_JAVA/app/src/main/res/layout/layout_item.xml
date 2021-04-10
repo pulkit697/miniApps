@@ -15,7 +15,7 @@
         android:id="@+id/tvLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:paddingVertical="2dp"
         android:paddingHorizontal="20dp"
         android:textSize="22sp"
         />
@@ -23,7 +23,7 @@
         android:id="@+id/tvUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:paddingVertical="2dp"
         android:paddingHorizontal="20dp"
         android:autoLink="web"
         android:textSize="22sp"
@@ -32,7 +32,7 @@
         android:id="@+id/tvScore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:paddingVertical="2dp"
         android:paddingHorizontal="20dp"
         android:textSize="22sp"
         />
