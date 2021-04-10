@@ -7,7 +7,8 @@
         android:id="@+id/tvId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:paddingVertical="2dp"
+        android:paddingHorizontal="20dp"
         android:textSize="22sp"
         />
     <TextView
@@ -15,6 +16,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="2dp"
+        android:paddingHorizontal="20dp"
+        android:textSize="22sp"
+        />
+    <TextView
+        android:id="@+id/tvUrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="2dp"
+        android:paddingHorizontal="20dp"
+        android:autoLink="web"
         android:textSize="22sp"
         />
     <TextView
@@ -22,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="2dp"
+        android:paddingHorizontal="20dp"
         android:textSize="22sp"
         />
     <View

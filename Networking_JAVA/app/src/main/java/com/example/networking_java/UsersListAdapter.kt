@@ -13,6 +13,7 @@ class UsersListAdapter(private val users_list:List<GitHubUser>): RecyclerView.Ad
             itemView.tvId.text = user.id.toString();
             itemView.tvLogin.text = user.login;
             itemView.tvScore.text = user.score.toString();
+            itemView.tvUrl.text = user.url;
         }
     }
 
