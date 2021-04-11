@@ -1,14 +1,18 @@
 package com.example.mapsandlocation
 
-import android.graphics.Color
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import com.google.android.gms.maps.*
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -41,19 +45,63 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             isScrollGesturesEnabled = true
             isTiltGesturesEnabled = true
         }
-
-
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,15f))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        mMap.addPolyline(
-                PolylineOptions()
-                        .add(sydney,LatLng(25.59,25.59))
-                        .color(ContextCompat.getColor(baseContext,R.color.design_default_color_primary))
-        )
-                .width = 2f
-
+        locationSeeker()
     }
+
+    private fun locationSeeker()
+    {
+        if(isFineLocationAllowed())
+        {
+            setUpLocationListener()
+        }else
+        {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),999)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode==999)
+        {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                setUpLocationListener()
+            else
+                Toast.makeText(this,"Location permission not permitted",Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setUpLocationListener() {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val providers = locationManager.getProviders(true)
+        var loc:Location?= null
+        for(i in providers.indices.reversed())
+        {
+            loc = locationManager.getLastKnownLocation(providers[i])
+            if(loc!=null)   break
+        }
+        loc?.let {
+            if(::mMap.isInitialized)
+                addMarker(loc.latitude,loc.longitude)
+        }
+    }
+
+    private fun addMarker(lat:Double,lng:Double) {
+        val current_location = LatLng(lat, lng)
+        mMap.addMarker(MarkerOptions().position(current_location).title("Marker in Sydney"))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(current_location,15f))
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+//        mMap.addPolyline(
+//            PolylineOptions()
+//                .add(sydney,LatLng(25.59,25.59))
+//                .color(ContextCompat.getColor(baseContext,R.color.design_default_color_primary))
+//        )
+//            .width = 2f
+    }
+
+    private fun isFineLocationAllowed(): Boolean = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 }
