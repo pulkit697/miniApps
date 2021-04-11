@@ -12,17 +12,17 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private val dbReference = FirebaseDatabase.getInstance().reference
-    private val notesList = arrayListOf<String>()
+    private val notesList = arrayListOf<Note>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,notesList)
+        val adapter = CustomAdapter(this,R.layout.note_layout,notesList)
         listNotes.adapter = adapter
 
         dbReference.child("note").addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                notesList.add(snapshot.value.toString())
+                snapshot.getValue(Note::class.java)?.let { notesList.add(it) }
                 adapter.notifyDataSetChanged()
             }
 
@@ -47,6 +47,6 @@ class MainActivity : AppCompatActivity() {
 
     fun saveToDatabase(view: View) {
         if(etTextValue.text.isNotBlank())
-            dbReference.child("note").push().setValue(etTextValue.text.toString())
+            dbReference.child("note").push().setValue(Note(etTextValue.text.toString(),etTextValue.text.toString()))
     }
 }
