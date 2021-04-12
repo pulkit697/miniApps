@@ -8,6 +8,11 @@
     android:gravity="center_horizontal"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/btLogOut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="log out"/>
     <EditText
         android:id="@+id/etTextValue"
         android:layout_width="match_parent"

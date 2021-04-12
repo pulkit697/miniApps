@@ -3,6 +3,7 @@ package com.example.firebasetutorial
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
@@ -35,11 +36,25 @@ class MainActivity : AppCompatActivity() {
             addListeners()
         }
         else{
-            startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+            startActivityForResult(AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setIsSmartLockEnabled(false) //disable auto google log in when only one account
                     .setAvailableProviders(listOf(AuthUI.IdpConfig.GoogleBuilder().build(),
                             AuthUI.IdpConfig.EmailBuilder().build(),
                             AuthUI.IdpConfig.PhoneBuilder().build()))
                     .build(), RC_SIGN_IN)
+        }
+        btLogOut.setOnClickListener {
+            if(firebaseUser!=null) {
+                AuthUI.getInstance()
+                        .signOut(this)
+                        .addOnCompleteListener {
+                            firebaseUser = null
+                            this.recreate()
+                        }
+            }
+            else
+                Toast.makeText(this,"You are not signed in!",Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -84,9 +99,9 @@ class MainActivity : AppCompatActivity() {
         // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
         if (requestCode == RC_SIGN_IN) {
             val response = IdpResponse.fromResultIntent(data)
-
             // Successfully signed in
             if (resultCode == RESULT_OK) {
+                firebaseUser = FirebaseAuth.getInstance().currentUser
                 addListeners()
             } else {
                 // Sign in failed
@@ -94,10 +109,10 @@ class MainActivity : AppCompatActivity() {
                     // User pressed back button
                     return
                 }
+                Log.d("pulkit", "Sign-in error: ", response.error)
                 if (response.error!!.errorCode == ErrorCodes.NO_NETWORK) {
                     return
                 }
-                Log.d("pulkit", "Sign-in error: ", response.error)
             }
         }
     }
