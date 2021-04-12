@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     var firebaseUser:FirebaseUser? = null
     val RC_SIGN_IN = 123
     lateinit var adapter: CustomAdapter
+//    val _error = 0/0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
