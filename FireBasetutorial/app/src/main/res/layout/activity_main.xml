@@ -15,9 +15,9 @@
         android:hint="enter here"
         />
     <Button
+        android:id="@+id/btAddToNotes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="saveToDatabase"
         android:text="click me"/>
     <ListView
         android:id="@+id/listNotes"
