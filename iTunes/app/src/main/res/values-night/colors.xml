@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="strokeColor">@android:color/holo_green_light</color>
+    <color name="trackCardBackground">@android:color/black</color>
+    <color name="appBackground">#00000000</color>
+</resources>
