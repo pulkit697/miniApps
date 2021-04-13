@@ -10,10 +10,13 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.room.Room
 import com.example.itunes.R
+import com.example.itunes.data.db.TracksDatabase
 import com.example.itunes.data.model.SingleTrack
 import com.example.itunes.ui.adapter.CustomRecyclerViewAdapter
 import com.example.itunes.ui.viewmodel.MainActivityViewModel
+import com.example.itunes.utils.DB_NAME
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -69,8 +72,8 @@ class MainActivity : AppCompatActivity() {
 
         })
     }
-    private fun hideKeyboard(view: View)
-    {
+
+    private fun hideKeyboard(view: View) {
         (this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(view.windowToken,0)
     }
 }
