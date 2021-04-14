@@ -1,6 +1,10 @@
 package com.example.itunes.ui.view
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,14 +20,18 @@ import com.example.itunes.ui.adapter.CustomRecyclerViewAdapter
 import com.example.itunes.ui.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
+import java.io.IOException
+import java.lang.Exception
 import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.net.UnknownHostException
 
 class MainActivity : AppCompatActivity() {
 
     private val tracksList = arrayListOf<SingleTrack>()
     private val mAdapter = CustomRecyclerViewAdapter(tracksList)
-    //private var isInternetAvailable = false
+    private var isInternetAvailable = false
 
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory.getInstance(application)}
 
@@ -39,7 +47,17 @@ class MainActivity : AppCompatActivity() {
             adapter = mAdapter
         }
         setUpSearchView()
+        attachBroadcastReceiver()
         fetchAllTracksFromDB()
+    }
+
+    private fun attachBroadcastReceiver() {
+        val intentFilter = IntentFilter().apply {
+            addAction("android.net.conn.CONNECTIVITY_CHANGE")
+            addAction("android.net.wifi.WIFI_STATE_CHANGED")
+        }
+        val receiver  = NetworkChangeReceiver()
+        registerReceiver(receiver,intentFilter)
     }
 
     private fun fetchAllTracksFromDB() {
@@ -67,17 +85,20 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                tvRecentBox.visibility = View.GONE
                 return true
             }
         })
         svSearchArtists.setOnCloseListener {
             hideKeyboard(svSearchArtists)
+            fetchAllTracksFromDB()
+            tvRecentBox.visibility = View.VISIBLE
             return@setOnCloseListener true
         }
     }
 
     private fun getTracksByQuery(query: String) {
-        if(isInternetAvailable()) {
+        if(isInternetAvailable) {
             getTracksFromApi(query)
         }else{
             getTracksFromDB(query)
@@ -86,29 +107,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun getTracksFromDB(query: String) {
         viewModel.getSearchedTracksFromDB(query).observe(this,{
+            tracksList.clear()
             if(!it.isNullOrEmpty()) {
-                tracksList.clear()
                 tracksList.addAll(it)
-                mAdapter.notifyDataSetChanged()
             }
             else{
                 Log.d("pulkit","null list query room")
             }
+            mAdapter.notifyDataSetChanged()
         })
     }
 
     private fun getTracksFromApi(query: String) {
         val newQuery = query.replace(" ","+")
         viewModel.getAllTracks(newQuery).observe(this, Observer {
+            tracksList.clear()
             if(!it.results.isNullOrEmpty()) {
                 Log.d("pulkit",""+it.resultCount)
-                tracksList.clear()
                 tracksList.addAll(it.results)
                 viewModel.insertFetchedTracksIntoDB(it.results)
-                mAdapter.notifyDataSetChanged()
             }else
                 Log.d("pulkit","null list!!!")
-
+            mAdapter.notifyDataSetChanged()
         })
     }
 
@@ -116,18 +136,34 @@ class MainActivity : AppCompatActivity() {
         (this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(view.windowToken,0)
     }
 
-    private fun isInternetAvailable():Boolean
-    {
-        try {
-            var isAvail = false
-            GlobalScope.launch(Dispatchers.IO) {
-                val address = runBlocking { InetAddress.getByName("www.google.com") }
-                isAvail = address.equals("")
+    fun checkingInternet() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val sock = Socket()
+                val something = GlobalScope.async(Dispatchers.IO) { sock.connect(InetSocketAddress("8.8.8.8", 53), 1500) }
+                something.await()
+                GlobalScope.launch(Dispatchers.IO) { sock.close() }
+                isInternetAvailable = true
+                withContext(Dispatchers.Main) {hideUnhideInternetWarning()}
+            } catch (e: IOException) {
+                Log.d("pulkit","internet not connected ${e.message}")
+                isInternetAvailable = false
+                withContext(Dispatchers.Main) {hideUnhideInternetWarning()}
             }
-            return isAvail
-        }catch (e:UnknownHostException){
-            Log.d("internet","Exception while checking internet connectivity: ${e.message}")
         }
-        return false
+    }
+
+    private fun hideUnhideInternetWarning() {
+        if(isInternetAvailable)
+            tvNoInternetWarning.visibility = View.GONE
+        else
+            tvNoInternetWarning.visibility = View.VISIBLE
+    }
+
+    inner class NetworkChangeReceiver:BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            checkingInternet()
+//            hideUnhideInternetWarning()
+        }
     }
 }

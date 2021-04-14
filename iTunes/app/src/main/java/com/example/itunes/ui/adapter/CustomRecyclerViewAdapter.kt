@@ -16,7 +16,7 @@ class CustomRecyclerViewAdapter(private val tracksList: List<SingleTrack>):
             tvTrackName.isSelected = true
             tvTrackName.text = track.trackName
             tvArtistName.text = track.artistName
-//            Glide.with(this).load(track.artworkUrl60).into(this.ivTrackImage)
+            Glide.with(this).load(track.artworkUrl60).error(R.drawable.ic_music_error).into(this.ivTrackImage)
         }
     }
 
