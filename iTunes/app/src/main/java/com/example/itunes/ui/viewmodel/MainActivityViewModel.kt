@@ -1,24 +1,50 @@
 package com.example.itunes.ui.viewmodel
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.liveData
-import com.example.itunes.data.db.TracksDatabase
-import com.example.itunes.data.model.SearchResult
+import androidx.lifecycle.viewModelScope
+import com.example.itunes.data.model.SingleTrack
 import com.example.itunes.data.repo.GetTracksRepo
+import com.example.itunes.data.repo.TrackFromDBRepo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivityViewModel: ViewModel() {
+class MainActivityViewModel(application: Application): AndroidViewModel(application) {
 
-    fun getAllTracks(query:String) = liveData(Dispatchers.IO) {
-        val response = withContext(Dispatchers.IO) {GetTracksRepo().searchTracks(query)}
-        if(response.isSuccessful)
-        {
-            Log.d("pulkit",response.body().toString())
-            response.body()?.let {
-            Log.d("pulkit",""+it.resultCount)
-                emit(it)
+    private val databaseRepo = TrackFromDBRepo(getApplication<Application>())
+
+    fun getTracksFromDB() =
+            liveData{
+                val fetchedList = withContext(Dispatchers.IO){databaseRepo.fetchTracksFromDB()}
+                emit(fetchedList)
+            }
+
+    fun getSearchedTracksFromDB(query: String) =
+        liveData{
+            val fetchedList = withContext(Dispatchers.IO){databaseRepo.fetchSearchedTracksFromDB(query)}
+            emit(fetchedList)
+        }
+
+    fun getAllTracks(query:String) =
+        liveData(Dispatchers.IO) {
+            val response = withContext(Dispatchers.IO) {GetTracksRepo().searchTracks(query)}
+            if(response.isSuccessful) {
+                Log.d("pulkit",response.body().toString())
+                response.body()?.let {
+                    Log.d("pulkit",""+it.resultCount)
+                    emit(it)
+                }
+            }
+        }
+
+    fun insertFetchedTracksIntoDB(tracksList:List<SingleTrack>)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            for (track in tracksList){
+                databaseRepo.insertTrackIntoDB(track)
             }
         }
     }

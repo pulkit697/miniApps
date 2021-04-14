@@ -9,8 +9,7 @@ data class SingleTrack(
 	val currency: String? = null,
 	val trackPrice: Double? = null,
 	val artworkUrl60: String? = null,
-	val artistName: String? = null
-){
-	@PrimaryKey(autoGenerate = true)
-	val id:Long = 0
-}
+	val artistName: String? = null,
+	@PrimaryKey
+	val trackId:Long?=null
+)
