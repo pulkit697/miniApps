@@ -13,11 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:text="Internet connection not available!"
+        android:text="@string/internet_connection_not_available"
         android:background="@android:color/holo_red_light"
         android:textColor="@color/white"
         android:paddingStart="10dp"
-        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
         android:gravity="center_vertical"
         app:drawableEndCompat="@drawable/ic_baseline_warning_24" />
     <androidx.appcompat.widget.SearchView
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="Recently Played"
+        android:text="@string/recently_played"
         android:layout_marginHorizontal="20dp"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvArtistsGrid"

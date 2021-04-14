@@ -1,6 +1,5 @@
 package com.example.itunes.data.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.itunes.data.model.SingleTrack
 

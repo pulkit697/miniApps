@@ -11,21 +11,18 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.itunes.R
 import com.example.itunes.data.model.SingleTrack
 import com.example.itunes.ui.adapter.CustomRecyclerViewAdapter
 import com.example.itunes.ui.viewmodel.MainActivityViewModel
+import com.example.itunes.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import java.io.IOException
-import java.lang.Exception
-import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.net.UnknownHostException
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 mAdapter.notifyDataSetChanged()
             }
             else{
-                Log.d("pulkit","null list all room")
+                Log.d(ROOM_DB_TAG,"null list all room")
             }
         })
     }
@@ -112,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                 tracksList.addAll(it)
             }
             else{
-                Log.d("pulkit","null list query room")
+                Log.d(ROOM_DB_TAG,"null list query room")
             }
             mAdapter.notifyDataSetChanged()
         })
@@ -120,14 +117,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun getTracksFromApi(query: String) {
         val newQuery = query.replace(" ","+")
-        viewModel.getAllTracks(newQuery).observe(this, Observer {
+        viewModel.getAllTracks(newQuery).observe(this, {
             tracksList.clear()
             if(!it.results.isNullOrEmpty()) {
-                Log.d("pulkit",""+it.resultCount)
+                Log.d(API_CALL_TAG,""+it.resultCount)
                 tracksList.addAll(it.results)
                 viewModel.insertFetchedTracksIntoDB(it.results)
             }else
-                Log.d("pulkit","null list!!!")
+                Log.d(API_CALL_TAG,"null list!!!")
             mAdapter.notifyDataSetChanged()
         })
     }
@@ -144,16 +141,16 @@ class MainActivity : AppCompatActivity() {
                 something.await()
                 GlobalScope.launch(Dispatchers.IO) { sock.close() }
                 isInternetAvailable = true
-                withContext(Dispatchers.Main) {hideUnhideInternetWarning()}
+                withContext(Dispatchers.Main) {hideAndShowInternetWarning()}
             } catch (e: IOException) {
-                Log.d("pulkit","internet not connected ${e.message}")
+                Log.d(INTERNET_TAG,"internet not connected ${e.message}")
                 isInternetAvailable = false
-                withContext(Dispatchers.Main) {hideUnhideInternetWarning()}
+                withContext(Dispatchers.Main) {hideAndShowInternetWarning()}
             }
         }
     }
 
-    private fun hideUnhideInternetWarning() {
+    private fun hideAndShowInternetWarning() {
         if(isInternetAvailable)
             tvNoInternetWarning.visibility = View.GONE
         else
@@ -163,7 +160,6 @@ class MainActivity : AppCompatActivity() {
     inner class NetworkChangeReceiver:BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             checkingInternet()
-//            hideUnhideInternetWarning()
         }
     }
 }

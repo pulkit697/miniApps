@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.itunes.data.model.SingleTrack
 import com.example.itunes.data.repo.GetTracksRepo
 import com.example.itunes.data.repo.TrackFromDBRepo
+import com.example.itunes.utils.ROOM_DB_TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,9 +33,9 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
         liveData(Dispatchers.IO) {
             val response = withContext(Dispatchers.IO) {GetTracksRepo().searchTracks(query)}
             if(response.isSuccessful) {
-                Log.d("pulkit",response.body().toString())
+                Log.d(ROOM_DB_TAG,response.body().toString())
                 response.body()?.let {
-                    Log.d("pulkit",""+it.resultCount)
+                    Log.d(ROOM_DB_TAG,""+it.resultCount)
                     emit(it)
                 }
             }
